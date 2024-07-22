@@ -4,10 +4,7 @@ import com.example.demo.models.Author;
 import com.example.demo.services.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
@@ -30,5 +27,27 @@ public class AuthorController {
         }else {
             return ResponseEntity.notFound().build();
         }
+    }
+    @PostMapping
+    public Author createAuthor(@RequestBody Author author){
+        return authorService.save(author);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Author> updateAuthor(@PathVariable Long id, @RequestBody Author authorDetails){
+        Optional<Author> author = authorService.findById(id);
+        if(author.isPresent()){
+            Author updatedAuthor = author.get();
+            updatedAuthor.setName(authorDetails.getName());
+            updatedAuthor.setSurname(authorDetails.getSurname());
+            return ResponseEntity.ok(authorService.save(updatedAuthor));
+        }else{
+            return ResponseEntity.notFound().build();
+        }
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteAuthor(@PathVariable Long id){
+        authorService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }
